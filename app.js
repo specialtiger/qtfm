@@ -127,7 +127,7 @@ let main = async()=>{
 	// 转换文件格式
 	let {full, sub} = get_file_name()
 	if (full && sub)
-		docmd(`ffmpeg -i QTDownloadRadio/${full} -acodec libmp3lame mp3/${sub}.mp3`)
+		docmd(`ffmpeg -i QTDownloadRadio/${full} -acodec libmp3lame qtfm_mp3/${sub}.mp3`)
 
 	console.log(logs)
 }

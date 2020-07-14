@@ -1,10 +1,20 @@
-adb shell am start -n fm.qingting.qtradio/fm.qingting.qtradio.QTRadioActivity
-
-am start -n fm.qingting.qtradio/.QTRadioActivity t35
+# am start -n fm.qingting.qtradio/.QTRadioActivity t35
 
 adb shell dumpsys activity activities
 
 dumpsys activity top | grep ACTIVITY
+
+adb -s 127.0.0.1:7555 shell am start -n fm.qingting.qtradio/.QTRadioActivity
+adb -s 127.0.0.1:7555 exec-out screencap -p > sc.png
+# dump当前窗体所有元素,输出到手机的绝对路径
+adb -s 127.0.0.1:7555 shell uiautomator dump /data/local/tmp/uidump.xml
+adb -s 127.0.0.1:7555 pull /data/local/tmp/uidump.xml
+# 点击地球寻声
+adb -s 127.0.0.1:7555 shell input tap 100 560
+# 点击下载
+adb -s 127.0.0.1:7555 shell input tap 500 1400
+# 结束应用
+adb -s 127.0.0.1:7555 shell am force-stop fm.qingting.qtradio
 
 # 点击(540, 1900)位置，启动录音
 os.system('adb shell input tap 540 1900')
@@ -16,6 +26,21 @@ os.system('adb shell input tap 540 1900')
 
 # 获取录音
 os.system('adb pull /storage/sdcard0/Sounds/新录音\ 001.m4a')
+
+1.模拟点击
+
+adb shell input tap 100 100
+2.滑动
+
+adb shell input swipe x1 y1 x2 y2 
+adb input touchscreen swipe x1 y1 x2 y2 100
+
+adb shell input swipe 100 100 400 100  300 #左往右
+adb shell input swipe 400 100 100 100  300 #右往左
+adb shell input swipe 100 100 100 400  300 #上往下
+adb shell input swipe 100 400 100 100  300 #下往上
+adb shell input swipe 100 100 400 400  300 #上往下斜
+adb shell input swipe 400 400 100 100  300 #下往上斜
 
 
 1、微信主界面Activity和朋友圈Activity：

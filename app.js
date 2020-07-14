@@ -39,6 +39,41 @@ let dump_ui = ()=>{
 	ui_content = fs.readFileSync('uidump.xml')
 }
 
+function getDate(ts) {
+	let d = new Date()
+	if (ts)
+		d.setTime(ts)
+	let year = d.getFullYear()
+	let month = d.getMonth()+1
+	let day = d.getDate()
+	let hour = d.getHours()
+	let min = d.getMinutes()
+	let sec = d.getSeconds()
+	let r = {year, month, day, hour, min, sec}
+	for (let i in r) {
+		r[i] = r[i].toString().padStart(2, '0')
+	}
+	return r
+}
+
+function getDateStr(ts) {
+	let t = getDate(ts)
+	return t.year+t.month+t.day
+}
+
+let get_file_name = ()=>{
+	let yesterday = getDateStr(Date.now()-24*3600*1000)
+	let files = fs.readdirSync('QTDownloadRadio')
+	console.log(yesterday)
+	for (let i=0; i<files.length; i++){
+		let idx = files[i].indexOf(yesterday)
+		if (idx != -1){
+			return {full:files[i], sub:files[i].substring(idx)}
+		}
+	}
+	return {}
+}
+
 let test = ()=>{
 	let s = 'text="CNR经典音乐广播" resource-id="fm.qingting.qtradio:id/name_TextView" class="android.widget.TextView" package="fm.qingting.qtradio" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[161,459][285,520]" />'
 	s += 'text="CNR经典音乐广播" resource-id="fm.qingting.qtradio:id/name_TextView" class="android.widget.TextView" package="fm.qingting.qtradio" content-desc="" checkable="false" checked="false" clickable="false" enabled="true" focusable="false" focused="false" scrollable="false" long-clickable="false" password="false" selected="false" bounds="[0,0][0,0]" />'
@@ -88,6 +123,11 @@ let main = async()=>{
 	await sleep(30000)
 	// 结束应用
 	docmd('adb -s 127.0.0.1:7555 shell am force-stop fm.qingting.qtradio')
+
+	// 转换文件格式
+	let {full, sub} = get_file_name()
+	if (full && sub)
+		docmd(`ffmpeg -i QTDownloadRadio/${full} -acodec libmp3lame mp3/${sub}.mp3`)
 
 	console.log(logs)
 }

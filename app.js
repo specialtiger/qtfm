@@ -4,6 +4,8 @@ const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitT
 
 let logs = []
 let ui_content = ''
+let windows_dir = 'C:\\Users\\tiger\\Documents\\MuMu共享文件夹\\QTDownloadRadio'
+let qt_down_dir = 'QTDownloadRadio'
 
 let docmd = cmd=>{
 	let log = execSync(cmd)
@@ -63,12 +65,12 @@ function getDateStr(ts) {
 
 let get_file_name = ()=>{
 	let yesterday = getDateStr(Date.now()-24*3600*1000)
-	let files = fs.readdirSync('QTDownloadRadio')
+	let files = fs.readdirSync(qt_down_dir)
 	console.log(yesterday)
 	for (let i=0; i<files.length; i++){
 		let idx = files[i].indexOf(yesterday)
 		if (idx != -1){
-			return {full:files[i], sub:files[i].substring(idx)}
+			return {full:qt_down_dir+'/'+files[i], sub:files[i].substring(idx)}
 		}
 	}
 	return {}
@@ -81,6 +83,8 @@ let test = ()=>{
 }
 
 let main = async()=>{
+	// 连接mumu模拟器
+	docmd('adb connect 127.0.0.1:7555')
 	// 结束应用
 	docmd('adb -s 127.0.0.1:7555 shell am force-stop fm.qingting.qtradio')
 	docmd('adb -s 127.0.0.1:7555 shell am start -n fm.qingting.qtradio/.QTRadioActivity')
@@ -119,6 +123,8 @@ let main = async()=>{
 	docmd('adb -s 127.0.0.1:7555 shell input tap 500 1400')
 	await sleep(30000)
 	// 复制文件（adb-sync另行下载）
+	console.log('复制文件')
+	// docmd('adb -s 127.0.0.1:7555 shell sh /sdcard/cpradio.sh')
 	docmd('./adb-sync -s 127.0.0.1:7555 --reverse /sdcard/QTDownloadRadio ./')
 	await sleep(30000)
 	// 结束应用
@@ -127,9 +133,10 @@ let main = async()=>{
 	// 转换文件格式
 	let {full, sub} = get_file_name()
 	if (full && sub)
-		docmd(`ffmpeg -i QTDownloadRadio/${full} -acodec libmp3lame qtfm_mp3/${sub}.mp3`)
+		docmd(`ffmpeg -i ${full} -acodec libmp3lame qtfm_mp3/${sub}.mp3`)
 
 	console.log(logs)
+	fs.writeFileSync('run.log', JSON.stringify(logs))
 }
 // test()
 

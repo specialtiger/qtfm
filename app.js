@@ -96,13 +96,18 @@ let main = async()=>{
 	dump_ui()
 	// await sleep(1000)
 	tap('CNR经典音乐广播')
-	dump_ui()
-	tap('批量下载')
+	await sleep(500)
+	// dump_ui()
+	// tap('批量下载')
+	docmd('adb -s 127.0.0.1:7555 shell input tap 598 314')
+	await sleep(500)
 	// dump_ui()
 	// tap('昨天')
 	docmd('adb -s 127.0.0.1:7555 shell input tap 608 173')
+	await sleep(500)
 	// 下往上滑动
 	docmd('adb -s 127.0.0.1:7555 shell input swipe 100 400 100 100  300')
+	await sleep(500)
 	// 点击不眠经典
 	docmd('adb -s 127.0.0.1:7555 shell input tap 326 1142')
 	// // dump当前窗体所有元素,输出到手机的绝对路径
@@ -133,7 +138,7 @@ let main = async()=>{
 	// 转换文件格式
 	let {full, sub} = get_file_name()
 	if (full && sub)
-		docmd(`ffmpeg -i ${full} -acodec libmp3lame qtfm_mp3/${sub}.mp3`)
+		docmd(`ffmpeg -y -i ${full} -acodec libmp3lame qtfm_mp3/${sub}.mp3`)
 
 	console.log(logs)
 	fs.writeFileSync('run.log', JSON.stringify(logs))

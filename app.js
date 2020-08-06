@@ -91,12 +91,15 @@ let main = async()=>{
 	await sleep(5000)
 	// 点击我听2次，其中第1次点掉广告
 	docmd('adb -s 127.0.0.1:7555 shell input tap 550 1420')
-	await sleep(500)
+	await sleep(1000)
 	docmd('adb -s 127.0.0.1:7555 shell input tap 550 1420')
+	await sleep(1000)
+	docmd('adb -s 127.0.0.1:7555 shell input tap 550 1420')
+	
 	dump_ui()
 	// await sleep(1000)
 	tap('CNR经典音乐广播')
-	await sleep(500)
+	await sleep(1000)
 	// dump_ui()
 	// tap('批量下载')
 	docmd('adb -s 127.0.0.1:7555 shell input tap 598 314')
@@ -137,8 +140,11 @@ let main = async()=>{
 
 	// 转换文件格式
 	let {full, sub} = get_file_name()
-	if (full && sub)
-		docmd(`ffmpeg -y -i ${full} -acodec libmp3lame qtfm_mp3/${sub}.mp3`)
+	if (full && sub){
+		docmd(`ffmpeg -y -i ${full} -acodec libmp3lame ${full}.mp3`)
+		// 剪掉开头的音频
+		docmd(`ffmpeg -i ${full}.mp3 -ss 00:02:20 -acodec copy qtfm_mp3/${sub}.mp3`)
+	}
 
 	console.log(logs)
 	fs.writeFileSync('run.log', JSON.stringify(logs))
